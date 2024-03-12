@@ -4,9 +4,9 @@ const uid = require("uuid");
 
 const getCars = async (_, res) => {
     try {
-        const getCars = await cars_model.findAll()
-        const response = getCars.filter((data) => data.dataValues)
-        res.status(200).send({ data: response, count: getCars.length })
+        const getCars = await cars_model.findAll({})
+        console.log(getCars);
+        res.status(200).send({ data: getCars })
     } catch (error) {
         console.log(error);
         res.status(500).send({ message: "Something went wrong with add process" })
