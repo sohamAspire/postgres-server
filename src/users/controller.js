@@ -1,14 +1,28 @@
-const { Sequelize } = require('sequelize')
-// const { cars_model } = require('../models/cars_model')
+const db = require('../../db')
 const { user_model } = require('../models/user_model')
+
 
 const getUsers = async (_, res) => {
     try {
-        const fetchUsers = await user_model.findAll({})
+        const fetchUsers = await user_model.findAndCountAll({
+            order: [['id', 'ASC']]
+        })
+        // const fetchUsers = await db.query(`SELECT * FROM users`)
         res.status(200).send({ data: fetchUsers })
     } catch (error) {
         console.log(error);
-        res.status(500).send({ message: "Something went wrong with add process" })
+        res.status(500).send({ message: "Something went wrong with Get All process" })
+    }
+}
+
+const getUsersById = async (req, res) => {
+    try {
+        const id = req.params.id
+        const fetchUser = await user_model.findByPk(id)
+        res.status(200).send({ data: fetchUser })
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ message: "Something went wrong with Get User by Id process" })
     }
 }
 
@@ -24,15 +38,25 @@ const checkUserExist = async (email) => {
 
 const postUsers = async (req, res) => {
     try {
-        await checkUserExist(req.body.email)
-        const addUsers = await user_model.create({ name: req.body.name, email: req.body.email, phone: req.body.phone })
-        if (addUsers) {
-            res.status(200).send({ message: "Data Added Successfully" })
-        }
+        const user = await user_model.findOrCreate({ where: { email: req.body.email } })
+        console.log(user);
+        res.status(200).send({ message: "Data Added Successfully" })
     } catch (error) {
         res.status(500).send({ message: "Something went wrong with add process", error: error.errors })
     }
 }
+
+// const postUsers = async (req, res) => {
+//     try {
+//         await checkUserExist(req.body.email)
+//         const addUsers = await user_model.create({ name: req.body.name, email: req.body.email, phone: req.body.phone })
+//         if (addUsers) {
+//             res.status(200).send({ message: "Data Added Successfully" })
+//         }
+//     } catch (error) {
+//         res.status(500).send({ message: "Something went wrong with add process", error: error.errors })
+//     }
+// }
 
 const checkUserExistById = async (id) => {
     const existenceOfUser = await user_model.findOne({ where: { id: id } })
@@ -55,4 +79,4 @@ const updateUsers = async (req, res) => {
     }
 }
 
-module.exports = { getUsers, postUsers, updateUsers }
+module.exports = { getUsers, postUsers, updateUsers, getUsersById }

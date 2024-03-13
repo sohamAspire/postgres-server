@@ -11,6 +11,9 @@ const user_model = db.define('users', {
     },
     name: {
         type: DataTypes.STRING,
+        get() {
+            return this.getDataValue('name') ? this.getDataValue('name').toUpperCase() : '';
+        },
         allowNull: false
     },
     email: {
@@ -23,14 +26,14 @@ const user_model = db.define('users', {
         allowNull: false,
         unique: true
     },
-    active : {
-        type :DataTypes.BOOLEAN,
-        allowNull : false,
-        defaultValue : true
+    active: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
     }
 }, { timestamps: true, freezeTableName: true })
 
-user_model.sync({ force: false }).then(() =>{
+user_model.sync({ force: false }).then(() => {
     console.log("Users Table Synced");
 })
 
