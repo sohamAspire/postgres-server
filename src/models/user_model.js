@@ -1,6 +1,8 @@
 const { DataTypes } = require("sequelize");
 const db = require("../../db")
 const uid = require("uuid");
+const { cars_model } = require("./cars_model");
+const { user_cars } = require("./users_cars");
 // const { cars_model } = require("./cars_model");
 
 const user_model = db.define('users', {
@@ -33,9 +35,12 @@ const user_model = db.define('users', {
     }
 }, { timestamps: true, freezeTableName: true })
 
-user_model.sync({ force: false }).then(() => {
+user_model.sync({ alter: true }).then(() => {
     console.log("Users Table Synced");
 })
+
+user_model.belongsToMany(cars_model , { through : user_cars , foreignKey : 'user_id'}),
+cars_model.belongsToMany(user_model , { through : user_cars , foreignKey : 'car_id'})
 
 // user_model.hasMany(cars_model, {
 //     as: 'cars',

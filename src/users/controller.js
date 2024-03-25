@@ -1,5 +1,6 @@
 const db = require('../../db')
 const { user_model } = require('../models/user_model')
+const { user_cars } = require('../models/users_cars')
 
 
 const getUsers = async (_, res) => {
@@ -38,10 +39,16 @@ const checkUserExist = async (email) => {
 
 const postUsers = async (req, res) => {
     try {
-        const user = await user_model.findOrCreate({ where: { email: req.body.email } })
-        console.log(user);
-        res.status(200).send({ message: "Data Added Successfully" })
+        const user = await user_model.create(req.body)
+        if(user && !!req.body.car_id){
+            const car_assigned = await user_cars.create({ 
+                car_id : req.body.car_id,
+                user_id : user?.dataValues?.id
+            })
+            res.status(200).send({ message: "Data Added Successfully" , data : {...user.dataValues , user_cars : car_assigned.dataValues}})
+        }
     } catch (error) {
+        console.log(error);
         res.status(500).send({ message: "Something went wrong with add process", error: error.errors })
     }
 }

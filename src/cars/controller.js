@@ -1,6 +1,7 @@
 
 const { cars_model } = require('../models/cars_model')
 const uid = require("uuid");
+const { user_cars } = require('../models/users_cars');
 
 const getCars = async (_, res) => {
     try {
@@ -16,18 +17,14 @@ const getCars = async (_, res) => {
 
 const postCars = async (req, res) => {
     try {
-        if (req.body.length > 1) {
-            const body = await req.body.filter((value) => {
-                value['id'] = `car~${uid.v4()}`
-                return value
-            });
-            await cars_model.bulkCreate(body)
-            res.status(200).send({ message: "Data Added Successfully" })
-        }
-        else {
-            const body = { ...req.body, id: `car~${uid.v4()}` }
-            await cars_model.create(body)
-            res.status(200).send({ message: "Data Added Successfully" })
+        const body = { ...req.body, id: `car~${uid.v4()}` }
+        const car = await cars_model.create(body)
+        if(car && !!req.body.user_id){
+            const users_assigned = await user_cars.create({
+                user_id : req.body.user_id,
+                car_id : body.id
+            })
+            res.status(200).send({ message: "Data Added Successfully" , data : {...car.dataValues , user_cars :  users_assigned.dataValues}  })
         }
     } catch (error) {
         console.log(error);
