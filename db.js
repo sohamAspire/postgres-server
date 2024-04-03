@@ -5,11 +5,17 @@ const { Sequelize } = require('sequelize');
 //     dialect: 'postgres'
 // });
 
-const db = new Sequelize('CRUD', 'postgres', '8980', {
-    host: 'localhost',
-    logging: false,
-    dialect:  'postgres' /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */
-  });
+const db = new Sequelize('demo', 'postgres', 'spatel@012023', {
+  host: 'localhost',
+  logging: false,
+  dialect: 'postgres'
+});
+
+// const db = new Sequelize('CRUD', 'postgres', '8980', {
+//   host: 'localhost',
+//   logging: false,
+//   dialect: 'postgres'
+// });
 
 module.exports = db
 

@@ -12,13 +12,13 @@ const cars_model = db.define('cars', {
         allowNull: false
     },
     model: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING, 
         allowNull: false,
         unique: true
     }
 }, { timestamps: true, freezeTableName: 'cars' })
 
-cars_model.sync({ alter: true }).then(() => {
+cars_model.sync({ alter: false }).then(() => {
     console.log("Cars Table Synced");
 })
 

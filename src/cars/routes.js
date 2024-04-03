@@ -4,7 +4,6 @@ const controller = require("./controller")
 const routes = Router()
 
 routes.get('/get-cars', controller.getCars)
-routes.post('/create-cars', controller.postCars)
-// routes.patch('/update-user/:id', controller.updateUsers)
+routes.post('/add-cars', controller.postCars)
 
 module.exports = routes

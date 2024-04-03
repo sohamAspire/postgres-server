@@ -2,11 +2,19 @@
 const { cars_model } = require('../models/cars_model')
 const uid = require("uuid");
 const { user_cars } = require('../models/users_cars');
+const { user_model } = require('../models/user_model');
 
 const getCars = async (_, res) => {
     try {
-        const getCars = await cars_model.findAll({})
-        console.log(getCars);
+        const getCars = await cars_model.findAll({
+            attributes: ['id', 'brand' , 'model'],
+            include: [{
+                model: user_model,
+                attributes: ['id', 'name' , 'email'],
+                as: "users",
+                through : { attributes : []}
+            }]
+        })
         res.status(200).send({ data: getCars })
     } catch (error) {
         console.log(error);
@@ -19,12 +27,12 @@ const postCars = async (req, res) => {
     try {
         const body = { ...req.body, id: `car~${uid.v4()}` }
         const car = await cars_model.create(body)
-        if(car && !!req.body.user_id){
-            const users_assigned = await user_cars.create({
-                user_id : req.body.user_id,
-                car_id : body.id
-            })
-            res.status(200).send({ message: "Data Added Successfully" , data : {...car.dataValues , user_cars :  users_assigned.dataValues}  })
+        if (!!body.user_id) {
+            const user_cars_details = await user_cars.create({ user_id: body.user_id, car_id: body.id })
+            res.status(200).send({ message: "Data Added Successfully", data: { ...car.dataValues, user_cars: user_cars_details } })
+        }
+        else {
+            res.status(200).send({ message: "Data Added Successfully", data: { ...car.dataValues } })
         }
     } catch (error) {
         console.log(error);
